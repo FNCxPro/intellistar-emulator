@@ -41,8 +41,6 @@ var music;
 window.onload = function() {
   CONFIG.addOption('zip-code', 'ZIP Code')
   CONFIG.addOption('crawlText', 'Crawl Text')
-  CONFIG.addOption('loop', 'Loop (y for yes, else no)')
-  CONFIG.addOption('otherBg', 'Other BGs from picsum.photos (y for yes, else no)')
   CONFIG.addOption('language', 'Language')
   CONFIG.addOption('units', 'Units')
   CONFIG.load();
@@ -147,7 +145,8 @@ function setInformation(){
   createLogoElements();
   setCurrentConditions();
   setTimelineEvents();
-  startAnimation();
+  hideSettings();
+  setTimeout(startAnimation, 1000);
 }
 
 function checkStormMusic(){
@@ -157,7 +156,6 @@ function checkStormMusic(){
 }
 
 function startAnimation(){
-  hideSettings();
   setInitialPositionCurrentPage();
 
   jingle.play();
@@ -170,7 +168,8 @@ function startMusic(){
 }
 
 function hideSettings(){
-  getElement("settings-container").style.display = 'none';
+  // Animate settings prompt out
+  getElement('settings-prompt').style.top = '-100%';
 }
 
 function executeGreetingPage(){
@@ -329,15 +328,15 @@ function scrollCC(){
 
 // Called at end of sequence. Animates everything out and shows ending text
 function endSequence(){
-  if (CONFIG.loop) {
-    location.reload()
-  } else {
-    clearInfoBar();
-  }
+  clearInfoBar();
 }
 
 function twcLogoClick() {
-  localStorage.setItem('loop', 'n')
+  var loopStatus = localStorage.getItem('loop');
+  if(loopStatus == "n"){
+    localStorage.setItem('loop', 'y');}
+  else{
+    localStorage.setItem('loop', 'n');}
 }
 
 function clearInfoBar(){
@@ -382,8 +381,12 @@ function stayUpdated(){
 
 // Final background animate out
 function clearEnd(){
-  getElement('background-image').classList.add("above-screen");
-  getElement('content-container').classList.add("above-screen");
+  if (CONFIG.loop) {
+    location.reload()
+  } else {
+    getElement('background-image').classList.add("above-screen");
+    getElement('content-container').classList.add("above-screen");
+  }
 }
 
 function loadInfoBar(){

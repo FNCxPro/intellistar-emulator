@@ -1,4 +1,10 @@
 function guessZipCode(){
+  var zipCodeElement = getElement("zip-code-text");
+  // Before filling with auto zip, check and see if
+  // there is already an input
+  if(zipCodeElement.value != ""){
+    return;
+  }
   // always use wunderground API for geolookup
   // only valid equivalent is GET v3/location/search
   // TODO: use TWC API GET v3/location/search instead of wunderground geolookup
@@ -10,7 +16,11 @@ function guessZipCode(){
       return;
     }
     response.json().then(function(data) {
-      getElement("zip-code-text").value = data.location.zip;
+      // Only fill zip if the user didn't touch
+      // the box while the zip was fetching
+      if(zipCodeElement.value == ""){
+        zipCodeElement.value = data.location.zip;
+      }
     });
   })
 }
@@ -158,7 +168,7 @@ function fetchCurrentWeather(){
             visibility = Math.round(unit.vis)
             humidity = unit.rh
             dewPoint = unit.dewpt
-            pressure = unit.altimeter
+            pressure = unit.altimeter.toPrecision(4);
             let ptendCode = data.observation.ptend_code
             pressureTrend = (ptendCode == 1 || ptendCode == 3) ? '▲' : ptendCode == 0 ? '' : '▼'; // if ptendCode == 1 or 3 (rising/rising rapidly) up arrow else its steady then nothing else (falling (rapidly)) down arrow
             currentIcon = data.observation.icon_code
@@ -166,7 +176,6 @@ function fetchCurrentWeather(){
           });
         });
       })
-
     });
   } else {
     fetch(`https://api.wunderground.com/api/${CONFIG.secrets.wundergroundAPIKey}/conditions/q/${zipCode}.json`)
@@ -187,7 +196,7 @@ function fetchCurrentWeather(){
         visibility = Math.round(data.current_observation.visibility_mi);
         humidity = data.current_observation.relative_humidity.replace("%", "");
         dewPoint = data.current_observation.dewpoint_f;
-        pressure = data.current_observation.pressure_in;
+        pressure = data.current_observation.pressure_in.toPrecision(4);
         if(data.current_observation.pressure_trend == "+"){
           pressureTrend = "▲"
         }else{
