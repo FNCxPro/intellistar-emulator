@@ -333,7 +333,7 @@ function endSequence(){
 
 function twcLogoClick() {
   var loopStatus = localStorage.getItem('loop');
-  if(loopStatus == "n"){
+  if(!loopStatus || loopStatus == "n"){
     localStorage.setItem('loop', 'y');}
   else{
     localStorage.setItem('loop', 'n');}
